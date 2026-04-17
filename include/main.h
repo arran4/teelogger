@@ -9,12 +9,11 @@
 #ifndef teelogger_main_h
 #define teelogger_main_h
 
-#define logger 
+#define logger
 
-struct _settings
-{
-    char * outputDirectory;
-    char * outputFormatStr;
+struct _settings {
+    char *outputDirectory;
+    char *outputFormatStr;
     int rotateModes;
 };
 
