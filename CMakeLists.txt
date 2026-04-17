@@ -6,9 +6,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-# Add include directory
-include_directories(include)
-
 # Define sources
 set(SOURCES
     src/main.c
@@ -17,6 +14,9 @@ set(SOURCES
 
 # Create executable
 add_executable(teelogger ${SOURCES})
+
+# Add include directory to target
+target_include_directories(teelogger PRIVATE include)
 
 # Installation rules
 install(TARGETS teelogger DESTINATION bin)
