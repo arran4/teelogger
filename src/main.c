@@ -88,9 +88,16 @@ int main(int argc, char *const *argv) {
                 exit(EXIT_FAILURE);
             }
             break;
-        case 's':
-            max_log_size = (size_t)atoll(optarg);
+        case 's': {
+            char *endptr;
+            unsigned long long val = strtoull(optarg, &endptr, 10);
+            if (*endptr != '\0') {
+                fprintf(stderr, "%s: Invalid size '%s'\n", prog_name, optarg);
+                exit(EXIT_FAILURE);
+            }
+            max_log_size = (size_t)val;
             break;
+        }
         case '?':
             fprintf(stderr, "Try '%s -h' for more information.\n", prog_name);
             exit(EXIT_FAILURE);
