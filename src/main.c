@@ -117,7 +117,12 @@ int main(int argc, char *const *argv) {
     char buffer[4096];
     ssize_t bytes_read;
 
-    while ((bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0) {
+    while ((bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) {
+        if (bytes_read < 0) {
+            if (errno == EINTR) continue;
+            break;
+        }
+
         // Write to stdout (if not daemonized and redirected, it goes to console)
         ssize_t written = 0;
         while (written < bytes_read) {
