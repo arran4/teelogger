@@ -9,6 +9,4 @@
 #ifndef teelogger_logger_h
 #define teelogger_logger_h
 
-
-
 #endif
