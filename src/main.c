@@ -46,7 +46,7 @@ int main(int argc, char *const *argv) {
             printf("Background mode enabled.\n");
             break;
         case 'f':
-            if ((fd = open(optarg, O_RDONLY, 0)) < 0) {
+            if ((fd = open(optarg, O_WRONLY | O_CREAT | O_APPEND, 0644)) < 0) {
                 fprintf(stderr, "%s: Error opening file '%s': %s\n", prog_name, optarg,
                         strerror(errno));
                 exit(EXIT_FAILURE);
