@@ -9,7 +9,7 @@
 #ifndef teelogger_main_h
 #define teelogger_main_h
 
-struct _settings {
+struct settings {
     char *outputDirectory;
     char *outputFormatStr;
     int rotateModes;
