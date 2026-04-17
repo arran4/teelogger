@@ -33,10 +33,13 @@ void check_and_rotate_log(const char *filepath, int *fd, size_t max_log_size) {
 
         char new_filepath[1024];
         time_t t = time(NULL);
-        struct tm tm = *localtime(&t);
+        struct tm *tm_ptr = localtime(&t);
+        if (!tm_ptr) return;
+        struct tm tm = *tm_ptr;
 
-        snprintf(new_filepath, sizeof(new_filepath), "%s.%04d%02d%02d-%02d%02d%02d", filepath,
+        int ret = snprintf(new_filepath, sizeof(new_filepath), "%s.%04d%02d%02d-%02d%02d%02d", filepath,
                  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+        if (ret < 0 || (size_t)ret >= sizeof(new_filepath)) return;
 
         if (rename(filepath, new_filepath) != 0) {
             fprintf(stderr, "Error renaming file '%s' to '%s': %s\n", filepath, new_filepath,
