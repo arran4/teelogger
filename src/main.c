@@ -33,7 +33,7 @@ int main(int argc, char *const *argv) {
     int bflag = 0;
     int ch;
     int fd = -1;
-    const char *prog_name = argv[0];
+    const char *prog_name = (argc > 0 && argv[0] != NULL) ? argv[0] : "teelogger";
 
     // Parse command line arguments
     while ((ch = getopt(argc, argv, "hbf:")) != -1) {
