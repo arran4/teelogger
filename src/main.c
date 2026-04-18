@@ -161,6 +161,8 @@ int main(int argc, char *const *argv) {
                         continue;
                     fprintf(stderr, "%s: Error writing to log file '%s': %s\n", prog_name, filepath,
                             strerror(errno));
+                    close(fd);
+                    fd = -1;
                     break;
                 }
                 written += result;
