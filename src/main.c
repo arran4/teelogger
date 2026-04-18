@@ -146,7 +146,7 @@ int main(int argc, char *const *argv) {
                     continue;
                 fprintf(stderr, "%s: Error writing to standard output: %s\n", prog_name,
                         strerror(errno));
-                break;
+                exit(EXIT_FAILURE);
             }
             written += result;
         }
