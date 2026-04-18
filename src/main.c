@@ -81,6 +81,9 @@ int main(int argc, char *const *argv) {
             bflag = 1;
             break;
         case 'f':
+            if (fd != -1) {
+                close(fd);
+            }
             filepath = optarg;
             if ((fd = open(filepath, O_WRONLY | O_CREAT | O_APPEND, 0644)) < 0) {
                 fprintf(stderr, "%s: Error opening file '%s': %s\n", prog_name, optarg,
@@ -90,8 +93,9 @@ int main(int argc, char *const *argv) {
             break;
         case 's': {
             char *endptr;
+            errno = 0;
             unsigned long long val = strtoull(optarg, &endptr, 10);
-            if (*endptr != '\0') {
+            if (optarg == endptr || *endptr != '\0' || errno == ERANGE) {
                 fprintf(stderr, "%s: Invalid size '%s'\n", prog_name, optarg);
                 exit(EXIT_FAILURE);
             }
@@ -110,6 +114,13 @@ int main(int argc, char *const *argv) {
     argc -= optind;
     argv += optind;
 
+    if (argc > 0) {
+        fprintf(stderr, "%s: Unexpected positional argument '%s'\n", prog_name, argv[0]);
+        // TODO: Future versions might support multiple input files via positional arguments
+        usage(prog_name);
+        exit(EXIT_FAILURE);
+    }
+
     if (bflag) {
         daemonize();
     }
@@ -119,7 +130,10 @@ int main(int argc, char *const *argv) {
 
     while ((bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer))) != 0) {
         if (bytes_read < 0) {
-            if (errno == EINTR) continue;
+            if (errno == EINTR)
+                continue;
+            fprintf(stderr, "%s: Error reading from standard input: %s\n", prog_name,
+                    strerror(errno));
             break;
         }
 
@@ -130,7 +144,9 @@ int main(int argc, char *const *argv) {
             if (result < 0) {
                 if (errno == EINTR)
                     continue;
-                break;
+                fprintf(stderr, "%s: Error writing to standard output: %s\n", prog_name,
+                        strerror(errno));
+                exit(EXIT_FAILURE);
             }
             written += result;
         }
@@ -143,6 +159,10 @@ int main(int argc, char *const *argv) {
                 if (result < 0) {
                     if (errno == EINTR)
                         continue;
+                    fprintf(stderr, "%s: Error writing to log file '%s': %s\n", prog_name, filepath,
+                            strerror(errno));
+                    close(fd);
+                    fd = -1;
                     break;
                 }
                 written += result;
